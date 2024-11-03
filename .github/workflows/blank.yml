@@ -1,6 +1,11 @@
 name: First-Workflow
 on: workflow-dispatch
 job:
-  name: Greeting
-  run: echo "Starting first jon"
+  Greeting:
+    run-on: ubuntu-latest
+    steps:
+      - name: Greeting
+        run: echo "this is the frist run" 
+      - name: Goodbye
+        run: echo "this the goodbye part"
   
