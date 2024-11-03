@@ -1,0 +1,6 @@
+name: First-Workflow
+on: workflow-dispatch
+job:
+  name: Greeting
+  run: echo "Starting first jon"
+  
