@@ -14,7 +14,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Home route
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index2.html')
 
 # Upload route
 @app.route('/upload', methods=['POST'])
@@ -47,7 +47,7 @@ def process_video(filename):
 
     # Simulate processing (copying the video file)
     shutil.copy(original_path, duplicate_path)
-
+    
     # Return the path of the duplicate video
     return duplicate_filename
 

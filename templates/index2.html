@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drag and Drop Video Upload</title>
     <style>
+
+        #text-middle {
+            justify-content: center;
+        }
         #drop-area {
             border: 2px dashed #ccc;
-            padding: 50px;
+            padding: 10px;
             text-align: center;
-            width: 80%;
+            width: 50%;
             margin: 0 auto;
         }
 
@@ -56,15 +60,23 @@
             margin-top: 20px;
             padding: 10px;
         }
+
+        #loading-spinner {
+            display: none;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-
+    <div id="title" role ="region">
+        <h1>Process video on Demand</h1>
+    </div>
     <!-- Drag and drop area for uploading videos -->
-    <div id="drop-area">
+    <div id="drop-area" role="region" aria-label="Drag and drop area for video upload">
         <h2>Drag and Drop a Video Here to Upload</h2>
-        <input type="file" id="file-input" accept="video/*" style="display: none;" />
-        <p>Or <a href="#" onclick="document.getElementById('file-input').click()">Choose a file</a></p>
+        <input type="file" id="file-input" accept="video/*" style="display: none;" aria-label="Choose a video file" />
+        <p>Or <a href="#" onclick="document.getElementById('file-input').click()" role="button" aria-label="Choose a file">Choose a file</a></p>
+        <div id="loading-spinner">Loading...</div>
     </div>
 
     <!-- Wrapper for two video players -->
@@ -122,46 +134,60 @@
             const formData = new FormData();
             formData.append('file', file);
 
+            // Show loading spinner
+            document.getElementById('loading-spinner').style.display = 'block';
+
             fetch('/upload', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.text())  // This will return the filename
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
             .then(filename => {
-                const videoSrc = `/uploads/${filename}`; // Correct the video source path
+                const videoSrc = `/uploads/${filename}`;
                 videoSource1.src = videoSrc;
-                videoPlayer1.load(); // Load the new video into player 1
-                uploadedVideoPath = videoSrc; // Save the uploaded video path
-                functionContainer.style.display = 'block'; // Show the function dropdown and button
+                videoPlayer1.load();
+                uploadedVideoPath = videoSrc;
+                functionContainer.style.display = 'block';
 
                 // Enable the dropdown and process button
                 document.getElementById('function-select').disabled = false;
                 document.getElementById('process-btn').disabled = false;
+
+                // Hide loading spinner
+                document.getElementById('loading-spinner').style.display = 'none';
             })
             .catch(error => {
                 console.error('Error uploading file:', error);
+                // Hide loading spinner and show error message
+                document.getElementById('loading-spinner').style.display = 'none';
+                alert('Error uploading file. Please try again.');
             });
         }
 
         // Play/Pause functionality for player 1
         playButton1.addEventListener('click', () => {
             if (videoPlayer1.paused) {
-                videoPlayer1.play(); // Play the video if it's paused
-                playButton1.textContent = 'Pause Video'; // Change button text to 'Pause'
+                videoPlayer1.play();
+                playButton1.textContent = 'Pause Video';
             } else {
-                videoPlayer1.pause(); // Pause the video if it's playing
-                playButton1.textContent = 'Play Video'; // Change button text back to 'Play'
+                videoPlayer1.pause();
+                playButton1.textContent = 'Play Video';
             }
         });
 
         // Play/Pause functionality for player 2
         playButton2.addEventListener('click', () => {
             if (videoPlayer2.paused) {
-                videoPlayer2.play(); // Play the video if it's paused
-                playButton2.textContent = 'Pause Video'; // Change button text to 'Pause'
+                videoPlayer2.play();
+                playButton2.textContent = 'Pause Video';
             } else {
-                videoPlayer2.pause(); // Pause the video if it's playing
-                playButton2.textContent = 'Play Video'; // Change button text back to 'Play'
+                videoPlayer2.pause();
+                playButton2.textContent = 'Play Video';
             }
         });
 
@@ -172,16 +198,22 @@
             if (selectedFunction === 'duplicate') {
                 // Call backend to duplicate the video
                 fetch(`/process_video/${uploadedVideoPath.split('/').pop()}`)
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
                 .then(duplicatePath => {
                     // Show the duplicate video in the second player
                     const duplicateVideoSrc = `/uploads/${duplicatePath}`;
                     videoSource2.src = duplicateVideoSrc;
                     videoPlayer2.load();
-                    playButton2.style.display = 'block'; // Enable play button for second player
+                    playButton2.style.display = 'block';
                 })
                 .catch(error => {
                     console.error('Error processing video:', error);
+                    alert('Error processing video. Please try again.');
                 });
             }
         });
