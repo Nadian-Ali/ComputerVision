@@ -6,72 +6,152 @@
     <title>Drag and Drop Video Upload</title>
     <style>
 
-        #text-middle {
-            justify-content: center;
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        #drop-area {
-            border: 2px dashed #ccc;
-            padding: 10px;
+
+        #title {
             text-align: center;
-            width: 50%;
-            margin: 0 auto;
+            padding: 40px 0;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 2.5em;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #drop-area {
+            border: 2px dashed #4CAF50;
+            padding: 40px;
+            text-align: center;
+            width: 60%;
+            margin: 30px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #drop-area h2 {
+            font-size: 1.8em;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        #drop-area p {
+            font-size: 1em;
+            color: #555;
+        }
+
+        #drop-area a {
+            color: #4CAF50;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        #drop-area a:hover {
+            text-decoration: underline;
         }
 
         .video-container-wrapper {
             display: flex;
             justify-content: space-between;
             width: 80%;
-            margin: 20px auto;
+            margin: 40px auto;
         }
 
         .video-container {
             width: 48%;
-            background-color: #f0f0f0;
-            border: 2px solid #ccc;
+            background-color: #ffffff;
+            border: 2px solid #ddd;
             padding: 20px;
             text-align: center;
-            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container h3 {
+            font-size: 1.2em;
+            color: #4CAF50;
         }
 
         video {
             width: 100%;
-            display: block;
-            margin-top: 10px;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         button {
-            margin-top: 10px;
-            padding: 10px 20px;
+            margin-top: 15px;
+            padding: 12px 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        h2 {
-            margin-bottom: 10px;
-        }
-
         select {
             margin-top: 20px;
-            padding: 10px;
+            padding: 12px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #function-container {
+            text-align: center;
+            margin-top: 40px;
         }
 
         #loading-spinner {
             display: none;
             margin-top: 20px;
+            font-size: 1.2em;
+            color: #4CAF50;
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .video-container-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .video-container {
+                width: 80%;
+                margin-bottom: 30px;
+            }
+
+            #drop-area {
+                width: 80%;
+            }
+
+            #title {
+                font-size: 2em;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div id="title" role ="region">
-        <h1>Process video on Demand</h1>
+    <div id="title" role="region">
+        <h1>Process Video on Demand</h1>
     </div>
-    <!-- Drag and drop area for uploading videos -->
+
     <div id="drop-area" role="region" aria-label="Drag and drop area for video upload">
         <h2>Drag and Drop a Video Here to Upload</h2>
         <input type="file" id="file-input" accept="video/*" style="display: none;" aria-label="Choose a video file" />
@@ -79,7 +159,6 @@
         <div id="loading-spinner">Loading...</div>
     </div>
 
-    <!-- Wrapper for two video players -->
     <div class="video-container-wrapper">
         <!-- Video Player 1 (Uploaded Video) -->
         <div class="video-container" id="video-container-1">
@@ -100,8 +179,7 @@
         </div>
     </div>
 
-    <!-- Dropdown for video processing options -->
-    <div id="function-container" style="text-align: center;">
+    <div id="function-container">
         <h2>Select a Function</h2>
         <select id="function-select" disabled>
             <option value="duplicate">Create Duplicate</option>
