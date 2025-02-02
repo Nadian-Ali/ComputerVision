@@ -5,8 +5,8 @@ import time
 
 app = Flask(__name__)
 
-# Configure upload folder
-UPLOAD_FOLDER = 'uploads'
+# Configure upload folder (use tmp directory for Heroku)
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -56,5 +56,3 @@ def process_video(filename):
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-if __name__ == '__main__':
-    app.run(debug=True)
