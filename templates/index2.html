@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drag and Drop Video Upload</title>
     <style>
-
+        
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f7fc;
             color: #333;
             margin: 0;
             padding: 0;
+            padding-bottom: 50px;
         }
 
         #title {
@@ -34,27 +35,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #drop-area h2 {
-            font-size: 1.8em;
-            color: #4CAF50;
-            margin-bottom: 10px;
-        }
-
-        #drop-area p {
-            font-size: 1em;
-            color: #555;
-        }
-
-        #drop-area a {
-            color: #4CAF50;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        #drop-area a:hover {
-            text-decoration: underline;
-        }
-
         .video-container-wrapper {
             display: flex;
             justify-content: space-between;
@@ -70,11 +50,6 @@
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .video-container h3 {
-            font-size: 1.2em;
-            color: #4CAF50;
         }
 
         video {
@@ -94,74 +69,100 @@
             cursor: pointer;
             font-size: 1em;
             border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        button:hover:enabled {
             background-color: #45a049;
         }
 
-        select {
-            margin-top: 20px;
-            padding: 12px;
-            font-size: 1em;
+        .download-link {
+            display: inline-block;
+            margin-left: 10px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #4CAF50;
+            padding: 10px 15px;
             border-radius: 5px;
-            border: 1px solid #ccc;
-            background-color: white;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .download-link.active {
+            pointer-events: auto;
+            opacity: 1;
         }
 
         #function-container {
-            text-align: center;
-            margin-top: 40px;
+            display: flex;
+            flex-direction: row;      /* Arrange items horizontally */
+            justify-content: center;  /* Center items horizontally */
+            align-items: center;      /* Vertically center items */
+            gap: 20px;                /* Space between the dropdown and button */
+            padding-bottom: 50px;     /* Adds space at the bottom of the container */
+            padding-top: 10px;
         }
 
-        #loading-spinner {
-            display: none;
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #4CAF50;
+        #function-select, #process-btn {
+            font-size: 16px;          /* Ensure consistent font size */
+            padding: 10px;            /* Ensure buttons and dropdown are large enough */
+            height: 45;             /* Set a fixed height to keep them aligned */
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .video-container-wrapper {
-                flex-direction: column;
-                align-items: center;
-            }
 
-            .video-container {
-                width: 80%;
-                margin-bottom: 30px;
-            }
-
-            #drop-area {
-                width: 80%;
-            }
-
-            #title {
-                font-size: 2em;
-            }
+        #process-btn {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
+        #process-btn:hover:enabled {
+            background-color: #45a049;
+        }
+
+        h2 {
+            margin-bottom: 16px;
+            font-size:12px
+        }
+
+        #simulate-payment-btn {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
     </style>
 </head>
 <body>
-    <div id="title" role="region">
+
+    <div id="title">
         <h1>Process Video on Demand</h1>
     </div>
 
-    <div id="drop-area" role="region" aria-label="Drag and drop area for video upload">
+    <div id="drop-area">
         <h2>Drag and Drop a Video Here to Upload</h2>
-        <input type="file" id="file-input" accept="video/*" style="display: none;" aria-label="Choose a video file" />
-        <p>Or <a href="#" onclick="document.getElementById('file-input').click()" role="button" aria-label="Choose a file">Choose a file</a></p>
-        <div id="loading-spinner">Loading...</div>
+        <input type="file" id="file-input" accept="video/*" style="display: none;" />
+        <p>Or <a href="#" onclick="document.getElementById('file-input').click()">Choose a file</a></p>
+        <div id="loading-spinner" style="display: none;">Loading...</div>
     </div>
 
     <div class="video-container-wrapper">
         <!-- Video Player 1 (Uploaded Video) -->
-        <div class="video-container" id="video-container-1">
+        <div class="video-container">
             <h3>Video Player 1 (Uploaded Video)</h3>
             <video id="video-player-1" controls>
                 <source id="video-source-1" type="video/mp4">
@@ -170,12 +171,13 @@
         </div>
 
         <!-- Video Player 2 (Processed Video) -->
-        <div class="video-container" id="video-container-2">
+        <div class="video-container">
             <h3>Video Player 2 (Processed Video)</h3>
             <video id="video-player-2" controls>
                 <source id="video-source-2" type="video/mp4">
             </video>
-            <button id="play-btn-2">Play Video</button>
+            <button id="play-btn-2" disabled>Play Video</button>
+            <a id="download-link" class="download-link">Download Processed Video</a>
         </div>
     </div>
 
@@ -187,67 +189,101 @@
         <button id="process-btn" disabled>Process Video</button>
     </div>
 
+    <!-- Simulate Payment Button -->
+    <button id="simulate-payment-btn">Simulate Payment</button>
+    
     <script>
-        // Video player elements for player 1
-        const dropArea = document.getElementById('drop-area');
         const videoPlayer1 = document.getElementById('video-player-1');
         const videoSource1 = document.getElementById('video-source-1');
         const fileInput = document.getElementById('file-input');
         const playButton1 = document.getElementById('play-btn-1');
 
-        // Video player elements for player 2
         const videoPlayer2 = document.getElementById('video-player-2');
         const videoSource2 = document.getElementById('video-source-2');
         const playButton2 = document.getElementById('play-btn-2');
+        const downloadLink = document.getElementById('download-link');
 
-        // Video processing elements
-        const functionContainer = document.getElementById('function-container');
         const processButton = document.getElementById('process-btn');
         const functionSelect = document.getElementById('function-select');
+        const simulatePaymentBtn = document.getElementById('simulate-payment-btn');
 
-        let uploadedVideoPath = '';  // To store the uploaded video path
+        let uploadedVideoFilename = '';
+        let processedFilename = ''; // Declare the global variable to hold the processed filename
+        let processedVideoSrc = ''; // Declare the global variable to hold the processed video source
 
-        // Function to handle video upload
+        // ✅ Improved: Proper JSON handling for upload
         function uploadFile(file) {
             const formData = new FormData();
             formData.append('file', file);
 
-            // Show loading spinner
             document.getElementById('loading-spinner').style.display = 'block';
 
             fetch('/upload', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(filename => {
-                const videoSrc = `/uploads/${filename}`;
+            .then(response => response.json())  // 🔥 Fix: Ensure JSON parsing
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+
+                uploadedVideoFilename = data.filename;  // Store filename correctly
+                const videoSrc = `/uploads/${uploadedVideoFilename}`;
                 videoSource1.src = videoSrc;
-                videoPlayer1.load();
-                uploadedVideoPath = videoSrc;
-                functionContainer.style.display = 'block';
+                videoPlayer1.load(); // Ensure video is loaded
 
-                // Enable the dropdown and process button
-                document.getElementById('function-select').disabled = false;
-                document.getElementById('process-btn').disabled = false;
+                functionSelect.disabled = false;
+                processButton.disabled = false;
 
-                // Hide loading spinner
                 document.getElementById('loading-spinner').style.display = 'none';
             })
             .catch(error => {
-                console.error('Error uploading file:', error);
-                // Hide loading spinner and show error message
-                document.getElementById('loading-spinner').style.display = 'none';
+                console.error('Upload Error:', error);
                 alert('Error uploading file. Please try again.');
+                document.getElementById('loading-spinner').style.display = 'none';
             });
         }
 
-        // Play/Pause functionality for player 1
+        // ✅ Improved: Proper JSON handling for process_video
+        processButton.addEventListener('click', () => {
+            if (!uploadedVideoFilename) {
+                alert("Please upload a video first.");
+                return;
+            }
+
+            fetch(`/process_video/${uploadedVideoFilename}`)
+            .then(response => response.json())  // 🔥 Fix: Ensure JSON parsing
+            .then(data => {
+                if (data.status !== "complete") throw new Error("Processing failed");
+
+                processedFilename = data.filename;  // Correctly extract filename
+                processedVideoSrc = `/uploads/${processedFilename}`;
+                videoSource2.src = processedVideoSrc;
+                videoPlayer2.load(); // Ensure video is loaded
+
+                playButton2.disabled = false;
+
+                // You can comment out this part if you want the download to be disabled initially
+                // downloadLink.href = processedVideoSrc;
+                // downloadLink.download = processedFilename;
+                // downloadLink.classList.add('active');
+            })
+            .catch(error => {
+                console.error('Processing Error:', error);
+                alert('Error processing video. Please try again.');
+            });
+        });
+
+        // ✅ Fix: Ensure file is valid before uploading
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('video/')) {
+                alert("Please select a valid video file.");
+                return;
+            }
+            uploadFile(file);
+        });
+
+        // ✅ Improved: Play button functionality
         playButton1.addEventListener('click', () => {
             if (videoPlayer1.paused) {
                 videoPlayer1.play();
@@ -258,7 +294,6 @@
             }
         });
 
-        // Play/Pause functionality for player 2
         playButton2.addEventListener('click', () => {
             if (videoPlayer2.paused) {
                 videoPlayer2.play();
@@ -269,55 +304,19 @@
             }
         });
 
-        // Handle processing (video duplication) on the backend
-        processButton.addEventListener('click', () => {
-            const selectedFunction = functionSelect.value;
+        // This function will mock a successful payment
+        simulatePaymentBtn.addEventListener('click', () => {
+            // Simulate successful payment (mocking)
+            // alert("Payment Successful!");
 
-            if (selectedFunction === 'duplicate') {
-                // Call backend to duplicate the video
-                fetch(`/process_video/${uploadedVideoPath.split('/').pop()}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
-                .then(duplicatePath => {
-                    // Show the duplicate video in the second player
-                    const duplicateVideoSrc = `/uploads/${duplicatePath}`;
-                    videoSource2.src = duplicateVideoSrc;
-                    videoPlayer2.load();
-                    playButton2.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error processing video:', error);
-                    alert('Error processing video. Please try again.');
-                });
-            }
+            // Now enable the download button
+            downloadLink.classList.add('active'); // Add the 'active' class to enable
+            downloadLink.href = processedVideoSrc; // Use the processed video source
+            downloadLink.download = processedFilename; // Set the processed filename for downloading
+            downloadLink.style.pointerEvents = 'auto'; // Allow user to click on the link
         });
 
-        // Prevent default behavior of drag and drop
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
-
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('video/')) {
-                uploadFile(file);
-            }
-        });
-
-        // File input event
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('video/')) {
-                uploadFile(file);
-            }
-        });
     </script>
 
 </body>
 </html>
->>>>>>> d0a2d6e08185583999c267c8b765abcb96fe40b3
