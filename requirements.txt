@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-Flask==2.0.1
-gunicorn==20.1.0
-=======
 Flask==2.0.1
 gunicorn==20.1.0
 Werkzeug>=2.0
->>>>>>> d0a2d6e08185583999c267c8b765abcb96fe40b3
