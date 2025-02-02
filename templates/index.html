@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -210,3 +211,217 @@
 
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Video Upload</title>
+    <style>
+        #drop-area {
+            border: 2px dashed #ccc;
+            padding: 50px;
+            text-align: center;
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        .video-container-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        .video-container {
+            width: 48%;
+            background-color: #f0f0f0;
+            border: 2px solid #ccc;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        select {
+            margin-top: 20px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Drag and drop area for uploading videos -->
+    <div id="drop-area">
+        <h2>Drag and Drop a Video Here to Upload</h2>
+        <input type="file" id="file-input" accept="video/*" style="display: none;" />
+        <p>Or <a href="#" onclick="document.getElementById('file-input').click()">Choose a file</a></p>
+    </div>
+
+    <!-- Wrapper for two video players -->
+    <div class="video-container-wrapper">
+        <!-- Video Player 1 (Uploaded Video) -->
+        <div class="video-container" id="video-container-1">
+            <h3>Video Player 1 (Uploaded Video)</h3>
+            <video id="video-player-1" controls>
+                <source id="video-source-1" type="video/mp4">
+            </video>
+            <button id="play-btn-1">Play Video</button>
+        </div>
+
+        <!-- Video Player 2 (Processed Video) -->
+        <div class="video-container" id="video-container-2">
+            <h3>Video Player 2 (Processed Video)</h3>
+            <video id="video-player-2" controls>
+                <source id="video-source-2" type="video/mp4">
+            </video>
+            <button id="play-btn-2">Play Video</button>
+        </div>
+    </div>
+
+    <!-- Dropdown for video processing options -->
+    <div id="function-container" style="text-align: center;">
+        <h2>Select a Function</h2>
+        <select id="function-select" disabled>
+            <option value="duplicate">Create Duplicate</option>
+        </select>
+        <button id="process-btn" disabled>Process Video</button>
+    </div>
+
+    <script>
+        // Video player elements for player 1
+        const dropArea = document.getElementById('drop-area');
+        const videoPlayer1 = document.getElementById('video-player-1');
+        const videoSource1 = document.getElementById('video-source-1');
+        const fileInput = document.getElementById('file-input');
+        const playButton1 = document.getElementById('play-btn-1');
+
+        // Video player elements for player 2
+        const videoPlayer2 = document.getElementById('video-player-2');
+        const videoSource2 = document.getElementById('video-source-2');
+        const playButton2 = document.getElementById('play-btn-2');
+
+        // Video processing elements
+        const functionContainer = document.getElementById('function-container');
+        const processButton = document.getElementById('process-btn');
+        const functionSelect = document.getElementById('function-select');
+
+        let uploadedVideoPath = '';  // To store the uploaded video path
+
+        // Function to handle video upload
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())  // This will return the filename
+            .then(filename => {
+                const videoSrc = `/uploads/${filename}`; // Correct the video source path
+                videoSource1.src = videoSrc;
+                videoPlayer1.load(); // Load the new video into player 1
+                uploadedVideoPath = videoSrc; // Save the uploaded video path
+                functionContainer.style.display = 'block'; // Show the function dropdown and button
+
+                // Enable the dropdown and process button
+                document.getElementById('function-select').disabled = false;
+                document.getElementById('process-btn').disabled = false;
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+            });
+        }
+
+        // Play/Pause functionality for player 1
+        playButton1.addEventListener('click', () => {
+            if (videoPlayer1.paused) {
+                videoPlayer1.play(); // Play the video if it's paused
+                playButton1.textContent = 'Pause Video'; // Change button text to 'Pause'
+            } else {
+                videoPlayer1.pause(); // Pause the video if it's playing
+                playButton1.textContent = 'Play Video'; // Change button text back to 'Play'
+            }
+        });
+
+        // Play/Pause functionality for player 2
+        playButton2.addEventListener('click', () => {
+            if (videoPlayer2.paused) {
+                videoPlayer2.play(); // Play the video if it's paused
+                playButton2.textContent = 'Pause Video'; // Change button text to 'Pause'
+            } else {
+                videoPlayer2.pause(); // Pause the video if it's playing
+                playButton2.textContent = 'Play Video'; // Change button text back to 'Play'
+            }
+        });
+
+        // Handle processing (video duplication) on the backend
+        processButton.addEventListener('click', () => {
+            const selectedFunction = functionSelect.value;
+
+            if (selectedFunction === 'duplicate') {
+                // Call backend to duplicate the video
+                fetch(`/process_video/${uploadedVideoPath.split('/').pop()}`)
+                .then(response => response.text())
+                .then(duplicatePath => {
+                    // Show the duplicate video in the second player
+                    const duplicateVideoSrc = `/uploads/${duplicatePath}`;
+                    videoSource2.src = duplicateVideoSrc;
+                    videoPlayer2.load();
+                    playButton2.style.display = 'block'; // Enable play button for second player
+                })
+                .catch(error => {
+                    console.error('Error processing video:', error);
+                });
+            }
+        });
+
+        // Prevent default behavior of drag and drop
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) {
+                uploadFile(file);
+            }
+        });
+
+        // File input event
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('video/')) {
+                uploadFile(file);
+            }
+        });
+    </script>
+
+</body>
+</html>
+>>>>>>> d0a2d6e08185583999c267c8b765abcb96fe40b3
